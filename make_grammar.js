@@ -107,7 +107,16 @@ module.exports = function make_grammar(dialect) {
                 ),
 
             _comment_action: ($) =>
-                seq($._left_delimiter, $.comment, $._right_delimiter),
+                choice(
+                    seq(token('{{'), $.comment, token.immediate('}}')),
+                    seq(
+                        token('{{-'),
+                        token.immediate(' '),
+                        $.comment,
+                        token.immediate(' '),
+                        token.immediate('-}}')
+                    )
+                ),
 
             _pipeline_action: ($) =>
                 seq($._left_delimiter, $._pipeline, $._right_delimiter),
@@ -435,13 +444,8 @@ module.exports = function make_grammar(dialect) {
                 ),
 
             // http://stackoverflow.com/questions/13014947/regex-to-match-a-c-style-multiline-comment/36328890#36328890
-            comment: ($) =>
-                token(
-                    choice(
-                        seq('//', /.*/),
-                        seq('/*', /[^*]*\*+([^/*][^*]*\*+)*/, '/')
-                    )
-                ),
+            comment: (_) =>
+                token.immediate(seq('/*', /[^*]*\*+([^/*][^*]*\*+)*/, '/')),
 
             _left_delimiter: ($) => choice(token('{{'), token('{{-')),
             _right_delimiter: ($) => choice(token('}}'), token('-}}')),
