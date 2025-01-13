@@ -417,7 +417,7 @@ module.exports = function make_grammar(dialect) {
                             $.escape_sequence
                         )
                     ),
-                    '"'
+                    token.immediate('"')
                 ),
 
             escape_sequence: ($) =>
